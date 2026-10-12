@@ -1,284 +1,749 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OfficeDraft AI</title>
 
-  <title>OfficeDraft AI | Official Document Generator</title>
+<style>
+* {
+  box-sizing: border-box;
+}
 
-  <meta
-    name="description"
-    content="Create concise official note sheets and letters with OfficeDraft AI."
-  >
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f1f5f9;
+  color: #202938;
+  font-size: 15px;
+}
 
-  <style>
-    :root {
-      --primary: #991b1b;
-      --primary-dark: #7f1d1d;
-      --green: #166534;
-      --background: #f3f6fb;
-      --border: #d1d5db;
-      --text: #1f2937;
-      --muted: #64748b;
-    }
+header {
+  background: linear-gradient(120deg, #8f1717, #b32626);
+  color: white;
+  padding: 22px 16px;
+}
 
-    * {
-      box-sizing: border-box;
-    }
+header h1 {
+  margin: 0 0 7px;
+  font-size: 24px;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--background);
-      color: var(--text);
-    }
+header p {
+  margin: 5px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
 
-    header {
-      padding: 24px 16px;
-      color: white;
-      background: linear-gradient(135deg, #991b1b, #7f1d1d);
-    }
+.badge {
+  display: inline-block;
+  border: 1px solid #ffffff80;
+  border-radius: 20px;
+  padding: 5px 9px;
+  margin-top: 7px;
+  font-size: 11px;
+}
 
-    .header-inner {
-      max-width: 1050px;
-      margin: auto;
-    }
+main {
+  max-width: 850px;
+  margin: 18px auto;
+  padding: 0 12px 35px;
+}
 
-    header h1 {
-      margin: 0 0 8px;
-      font-size: 27px;
-    }
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 10px #00000009;
+}
 
-    header p {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.6;
-    }
+h2 {
+  margin: 0 0 18px;
+  font-size: 19px;
+}
 
-    .badge {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 5px 9px;
-      border: 1px solid #ffffff70;
-      border-radius: 20px;
-      font-size: 11px;
-    }
+label {
+  display: block;
+  margin: 15px 0 7px;
+  font-weight: bold;
+  font-size: 14px;
+}
 
-    main {
-      max-width: 1050px;
-      margin: 24px auto;
-      padding: 0 14px;
-    }
+input, select, textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
+  color: #202938;
+  font-size: 15px;
+  font-family: inherit;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
+textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
 
-    .card {
-      min-width: 0;
-      padding: 22px;
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      box-shadow: 0 3px 12px #00000008;
-    }
+small {
+  display: block;
+  margin-top: 6px;
+  color: #64748b;
+  line-height: 1.4;
+}
 
-    h2 {
-      margin: 0 0 8px;
-      font-size: 20px;
-    }
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 13px;
+  margin-top: 15px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .description {
-      margin: 0 0 18px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
+.primary {
+  background: #a51f1f;
+  color: white;
+}
 
-    label {
-      display: block;
-      margin: 16px 0 7px;
-      font-size: 13px;
-      font-weight: bold;
-    }
+.secondary {
+  background: #e8eef5;
+  color: #243247;
+}
 
-    input,
-    select,
-    textarea {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      background: white;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 14px;
-    }
+.green {
+  background: #176b43;
+  color: white;
+}
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: 2px solid #fecaca;
-      border-color: var(--primary);
-    }
+#resultSection {
+  display: none;
+}
 
-    textarea {
-      resize: vertical;
-      line-height: 1.65;
-    }
+#draftOutput {
+  min-height: 300px;
+  white-space: pre-wrap;
+  line-height: 1.75;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 15px;
+  background: #fff;
+  font-family: "Times New Roman", serif;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
 
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin-top: 18px;
-    }
+.notice {
+  background: #fff7df;
+  color: #77520c;
+  border-radius: 8px;
+  padding: 12px;
+  line-height: 1.5;
+  font-size: 13px;
+  margin-top: 12px;
+}
 
-    button {
-      padding: 12px 15px;
-      border: 0;
-      border-radius: 7px;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.status {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #176b43;
+  overflow-wrap: anywhere;
+}
 
-    button:focus-visible {
-      outline: 2px solid #2563eb;
-      outline-offset: 2px;
-    }
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #64748b;
+  font-size: 12px;
+}
 
-    .primary {
-      background: var(--primary);
-      color: white;
-    }
+@media (min-width: 650px) {
+  main {
+    padding: 0 20px 40px;
+  }
 
-    .primary:hover {
-      background: var(--primary-dark);
-    }
-
-    .secondary {
-      background: #e5e7eb;
-      color: var(--text);
-    }
-
-    .success {
-      background: var(--green);
-      color: white;
-    }
-
-    .full-width {
-      width: 100%;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .status {
-      margin-top: 14px;
-      padding: 11px;
-      border-radius: 7px;
-      background: #f8fafc;
-      color: #475569;
-      font-size: 12px;
-      line-height: 1.6;
-      overflow-wrap: anywhere;
-    }
-
-    .status.error {
-      background: #fef2f2;
-      color: #991b1b;
-    }
-
-    .status.success-message {
-      background: #f0fdf4;
-      color: #166534;
-    }
-
-    .status.warning {
-      background: #fffbeb;
-      color: #92400e;
-    }
-
-    .analysis {
-      margin-top: 14px;
-      padding: 12px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 12px;
-      line-height: 1.7;
-    }
-
-    .analysis ul {
-      padding-left: 19px;
-    }
-
-    .analysis li {
-      margin: 5px 0;
-    }
-
-    .document-label {
-      display: inline-block;
-      margin-bottom: 12px;
-      padding: 5px 9px;
-      background: #fee2e2;
-      color: #991b1b;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: bold;
-    }
-
-    .help {
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.5;
-    }
-
-    footer {
-      padding: 24px 14px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
-    }
-
-    @media (max-width: 760px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      header h1 {
-        font-size: 23px;
-      }
-
-      .card {
-        padding: 17px;
-      }
-    }
-  </style>
+  .two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <div class="header-inner">
-    <h1>OfficeDraft AI</h1>
-    <p>Official Note Sheet & Letter Generator</p>
-    <p>Simple English. Clear references. Professional drafts.</p>
-    <span class="badge">Independent Prototype · Version 2</span>
-  </div>
+  <h1>OfficeDraft AI</h1>
+  <p>Official Note Sheet &amp; Letter Generator</p>
+  <p>Simple English. Clear references. Professional drafts.</p>
+  <span class="badge">Independent Prototype · Version 3</span>
 </header>
 
 <main>
-  <div class="grid">
 
-    <section class="card">
-      <h2>Create a Draft</h2>
+  <section class="card" id="formSection">
+    <h2>Create a Draft</h2>
 
-      <p class="description">
+    <form id="draftForm">
+
+      <label for="documentType">Document Type</label>
+      <select id="documentType">
+        <option value="note">Note Sheet</option>
+        <option value="letter">Official Letter</option>
+        <option value="reminder">Reminder Letter</option>
+        <option value="reply">Official Reply</option>
+        <option value="forwarding">Forwarding Letter</option>
+        <option value="proposal">Approval Proposal</option>
+      </select>
+
+      <div class="two-columns">
+        <div>
+          <label for="reference">Page / File Reference</label>
+          <input id="reference" placeholder="Example: 23 24 or 23/c to 24/c">
+          <small>Optional. Enter the reference as written in your file.</small>
+        </div>
+
+        <div>
+          <label for="date">Date</label>
+          <input id="date" type="date">
+        </div>
+      </div>
+
+      <label for="subject">Subject / Short Topic</label>
+      <input id="subject" placeholder="Example: LPC, salary issue, leave application" required>
+
+      <label for="recipient">To / Recipient</label>
+      <input id="recipient" placeholder="Example: Senior Superintendent of Post Offices">
+
+      <label for="context">Brief Context</label>
+      <textarea id="context" placeholder="Write your points in simple words. Grammar does not need to be perfect.
+
+Example: Letter received from SSPO regarding LPC. Need approval."></textarea>
+      <small>Use short sentences, rough English or office abbreviations. Check the final draft before issuing it.</small>
+
+      <label for="action">Required Action / Purpose</label>
+      <textarea id="action" placeholder="Example: Submitted for kind perusal and approval."></textarea>
+
+      <label for="signatory">Signatory / Designation</label>
+      <input id="signatory" placeholder="Example: Postal Assistant, Nagpur City HO">
+
+      <button class="primary" type="submit">Generate Draft</button>
+
+      <button class="secondary" type="button" id="clearButton">
+        Clear Form
+      </button>
+
+    </form>
+  </section>
+
+  <section class="card" id="resultSection">
+    <h2>Generated Draft</h2>
+
+    <div id="draftOutput" contenteditable="true" spellcheck="true"></div>
+
+    <small>You can tap the draft and edit the text before copying or downloading it.</small>
+
+    <button class="primary" type="button" id="copyButton">
+      Copy Draft
+    </button>
+
+    <button class="green" type="button" id="downloadButton">
+      Download Word Document
+    </button>
+
+    <button class="secondary" type="button" id="regenerateButton">
+      Generate Again
+    </button>
+
+    <div class="notice">
+      Important: This prototype uses predefined rules and common office abbreviations.
+      It does not use an AI service. Verify names, dates, facts, rules and approvals
+      before issuing an official document. The download is a Word-compatible .doc
+      file, not a native .docx file.
+    </div>
+
+    <div class="status" id="statusMessage" role="status"></div>
+  </section>
+
+</main>
+
+<footer>
+  OfficeDraft AI · Independent Prototype
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  const $ = function (id) {
+    return document.getElementById(id);
+  };
+
+  const form = $("draftForm");
+  const resultSection = $("resultSection");
+  const draftOutput = $("draftOutput");
+  const statusMessage = $("statusMessage");
+
+  const abbreviations = {
+    "SSPO": "Senior Superintendent of Post Offices",
+    "SPO": "Superintendent of Post Offices",
+    "HO": "Head Office",
+    "HPO": "Head Post Office",
+    "SO": "Sub Office",
+    "BO": "Branch Office",
+    "PLI": "Postal Life Insurance",
+    "RPLI": "Rural Postal Life Insurance",
+    "POSB": "Post Office Savings Bank",
+    "IPPB": "India Post Payments Bank",
+    "CBS": "Core Banking Solution",
+    "DDO": "Drawing and Disbursing Officer",
+    "PA": "Postal Assistant",
+    "MTS": "Multi-Tasking Staff",
+    "GDS": "Gramin Dak Sevak",
+    "MACP": "Modified Assured Career Progression",
+    "APAR": "Annual Performance Appraisal Report",
+    "LTC": "Leave Travel Concession",
+    "NOC": "No Objection Certificate",
+    "RTI": "Right to Information",
+    "SOP": "Standard Operating Procedure",
+    "DA": "Dearness Allowance",
+    "LPC": "Local Purchase Committee",
+    "LPCERT": "Last Pay Certificate",
+    "UC": "Utilisation Certificate",
+    "TA": "Travelling Allowance",
+    "RMS": "Railway Mail Service",
+    "NSC": "National Savings Certificate",
+    "PPF": "Public Provident Fund",
+    "SSA": "Sukanya Samriddhi Account",
+    "SB": "Savings Bank",
+    "RD": "Recurring Deposit",
+    "TD": "Time Deposit",
+    "MIS": "Monthly Income Scheme",
+    "KVP": "Kisan Vikas Patra",
+    "SCSS": "Senior Citizens Savings Scheme",
+    "FDR": "Fixed Deposit Receipt",
+    "ID": "Identity Document",
+    "DOB": "Date of Birth",
+    "PO": "Post Office",
+    "HQ": "Headquarters"
+  };
+
+  function escapeRegExp(text) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  function expandAbbreviations(text) {
+    let output = text || "";
+
+    const keys = Object.keys(abbreviations)
+      .sort(function (a, b) {
+        return b.length - a.length;
+      });
+
+    keys.forEach(function (key) {
+      const pattern = new RegExp(
+        "\\b" + escapeRegExp(key) + "\\b",
+        "gi"
+      );
+
+      output = output.replace(pattern, function (match) {
+        return abbreviations[match.toUpperCase()] +
+          " (" + match.toUpperCase() + ")";
+      });
+    });
+
+    return output;
+  }
+
+  function cleanText(text) {
+    return (text || "")
+      .replace(/\r/g, "")
+      .replace(/[ \t]+/g, " ")
+      .replace(/\n[ \t]+/g, "\n")
+      .trim();
+  }
+
+  function formatReference(value) {
+    let ref = cleanText(value);
+
+    if (!ref) {
+      return "";
+    }
+
+    ref = ref.replace(/\s+to\s+/i, " to ");
+
+    const range = ref.match(
+      /^(\d+)\s*(?:\/?c)?\s+to\s+(\d+)\s*(?:\/?c)?$/i
+    );
+
+    if (range) {
+      return "Pages " + range[1] + "/c to " + range[2] + "/c";
+    }
+
+    const twoPages = ref.match(/^(\d+)\s+(\d+)$/);
+
+    if (twoPages) {
+      return "Pages " + twoPages[1] + "/c to " + twoPages[2] + "/c";
+    }
+
+    if (/^\d+$/.test(ref)) {
+      return "Page " + ref + "/c";
+    }
+
+    return ref;
+  }
+
+  function sentence(text) {
+    let value = cleanText(text);
+
+    if (!value) {
+      return "";
+    }
+
+    value = value.replace(/[.]+$/, "");
+    return value + ".";
+  }
+
+  function titleCaseFirst(text) {
+    if (!text) return "";
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+
+  function getFormData() {
+    return {
+      type: $("documentType").value,
+      reference: formatReference($("reference").value),
+      date: $("date").value,
+      subject: cleanText($("subject").value),
+      recipient: cleanText($("recipient").value),
+      context: cleanText($("context").value),
+      action: cleanText($("action").value),
+      signatory: cleanText($("signatory").value)
+    };
+  }
+
+  function displayDate(value) {
+    if (!value) return "";
+
+    const parts = value.split("-");
+    if (parts.length !== 3) return value;
+
+    return parts[2] + "." + parts[1] + "." + parts[0];
+  }
+
+  function makeDraft(data) {
+    const subject = titleCaseFirst(data.subject);
+    const context = expandAbbreviations(data.context);
+    const action = expandAbbreviations(data.action);
+
+    const lines = [];
+
+    if (data.type === "note") {
+      lines.push("NOTE SHEET");
+      lines.push("");
+
+      if (data.reference) {
+        lines.push("Reference: " + data.reference);
+        lines.push("");
+      }
+
+      lines.push("Subject: " + subject);
+      lines.push("");
+
+      if (context) {
+        lines.push(context);
+        lines.push("");
+      } else {
+        lines.push(
+          "The matter relating to the above subject is submitted for consideration."
+        );
+        lines.push("");
+      }
+
+      if (data.reference) {
+        lines.push(
+          "The relevant documents are placed at " +
+          data.reference.toLowerCase() +
+          " for kind perusal."
+        );
+        lines.push("");
+      }
+
+      lines.push(
+        action
+          ? sentence(action)
+          : "Submitted for kind perusal and necessary orders."
+      );
+
+      if (data.date) {
+        lines.push("");
+        lines.push("Date: " + displayDate(data.date));
+      }
+
+      if (data.signatory) {
+        lines.push("");
+        lines.push(data.signatory);
+      }
+
+      return lines.join("\n");
+    }
+
+    if (data.type === "proposal") {
+      lines.push("PROPOSAL FOR APPROVAL");
+      lines.push("");
+
+      if (data.reference) {
+        lines.push("Reference: " + data.reference);
+        lines.push("");
+      }
+
+      lines.push("Subject: " + subject);
+      lines.push("");
+
+      if (context) {
+        lines.push(context);
+        lines.push("");
+      }
+
+      lines.push(
+        action
+          ? sentence(action)
+          : "Approval is solicited for the proposal stated above."
+      );
+
+      lines.push("");
+      lines.push("Submitted for kind consideration and approval.");
+
+      if (data.date) {
+        lines.push("");
+        lines.push("Date: " + displayDate(data.date));
+      }
+
+      if (data.signatory) {
+        lines.push("");
+        lines.push(data.signatory);
+      }
+
+      return lines.join("\n");
+    }
+
+    const headings = {
+      letter: "OFFICIAL LETTER",
+      reminder: "REMINDER",
+      reply: "OFFICIAL REPLY",
+      forwarding: "FORWARDING LETTER"
+    };
+
+    lines.push(headings[data.type] || "OFFICIAL LETTER");
+    lines.push("");
+
+    if (data.date) {
+      lines.push("Date: " + displayDate(data.date));
+      lines.push("");
+    }
+
+    if (data.recipient) {
+      lines.push("To,");
+      lines.push(data.recipient);
+      lines.push("");
+    }
+
+    if (data.reference) {
+      lines.push("Reference: " + data.reference);
+      lines.push("");
+    }
+
+    lines.push("Subject: " + subject);
+    lines.push("");
+
+    if (data.type === "reminder") {
+      lines.push(
+        "With reference to the above subject, it is requested that the pending matter be attended to at the earliest."
+      );
+
+      if (context) {
+        lines.push("");
+        lines.push(context);
+      }
+
+      if (action) {
+        lines.push("");
+        lines.push(sentence(action));
+      }
+    } else if (data.type === "reply") {
+      lines.push(
+        "With reference to the above subject, the following is submitted for your kind information and consideration."
+      );
+
+      if (context) {
+        lines.push("");
+        lines.push(context);
+      }
+
+      if (action) {
+        lines.push("");
+        lines.push(sentence(action));
+      }
+    } else if (data.type === "forwarding") {
+      lines.push(
+        "The matter referred to above is forwarded for your information and necessary action."
+      );
+
+      if (context) {
+        lines.push("");
+        lines.push(context);
+      }
+
+      if (action) {
+        lines.push("");
+        lines.push(sentence(action));
+      }
+    } else {
+      lines.push("Sir/Madam,");
+      lines.push("");
+
+      if (context) {
+        lines.push(context);
+        lines.push("");
+      }
+
+      lines.push(
+        action
+          ? sentence(action)
+          : "This is submitted for your kind information and necessary action."
+      );
+    }
+
+    lines.push("");
+    lines.push("Yours faithfully,");
+
+    if (data.signatory) {
+      lines.push("");
+      lines.push(data.signatory);
+    }
+
+    return lines.join("\n");
+  }
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    try {
+      const data = getFormData();
+
+      if (!data.subject) {
+        alert("Please enter the Subject / Short Topic.");
+        $("subject").focus();
+        return;
+      }
+
+      const draft = makeDraft(data);
+
+      if (!draft || !draft.trim()) {
+        alert("The draft could not be generated. Please try again.");
+        return;
+      }
+
+      draftOutput.textContent = draft;
+      resultSection.style.display = "block";
+      statusMessage.textContent = "Draft generated successfully.";
+
+      resultSection.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    } catch (error) {
+      alert("Unable to generate the draft. Please reload the page and try again.");
+    }
+  });
+
+  $("copyButton").addEventListener("click", async function () {
+    const text = draftOutput.innerText || draftOutput.textContent || "";
+
+    if (!text.trim()) {
+      alert("Generate a draft first.");
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      statusMessage.textContent = "Draft copied to clipboard.";
+    } catch (error) {
+      const range = document.createRange();
+      range.selectNodeContents(draftOutput);
+
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+
+      statusMessage.textContent =
+        "Draft selected. Long-press the text and choose Copy.";
+    }
+  });
+
+  $("downloadButton").addEventListener("click", function () {
+    const text = draftOutput.innerText || draftOutput.textContent || "";
+
+    if (!text.trim()) {
+      alert("Generate a draft first.");
+      return;
+    }
+
+    const safeText = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/\n/g, "<br>");
+
+    const documentHtml =
+      '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+      '<style>body{font-family:"Times New Roman";font-size:12pt;line-height:1.6;}</style>' +
+      '</head><body>' + safeText + '</body></html>';
+
+    const blob = new Blob(
+      ["\ufeff", documentHtml],
+      { type: "application/msword;charset=utf-8" }
+    );
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "OfficeDraft.doc";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 1500);
+
+    statusMessage.textContent =
+      "Word-compatible document downloaded as OfficeDraft.doc.";
+  });
+
+  $("regenerateButton").addEventListener("click", function () {
+    form.requestSubmit();
+  });
+
+  $("clearButton").addEventListener("click", function () {
+    form.reset();
+    resultSection.style.display = "none";
+    draftOutput.textContent = "";
+    statusMessage.textContent = "";
+    $("subject").focus();
+  });
+
+  // Confirm that the application JavaScript has loaded.
+  console.log("OfficeDraft AI Version 3 loaded successfully.");
+})();
+</script>
+
+</body>
+</html>
