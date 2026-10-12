@@ -1,260 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OfficeDraft AI</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#1f2937}
-header{background:#991b1b;color:white;text-align:center;padding:22px 14px}
-header h1{margin:0 0 7px;font-size:25px}
-header p{margin:0;font-size:13px}
-main{max-width:900px;margin:24px auto;padding:0 14px}
-.card{background:#fff;padding:22px;border-radius:12px;margin-bottom:20px;box-shadow:0 3px 12px #0000000a}
-h2{font-size:20px;margin:0 0 16px}
-label{display:block;font-size:14px;font-weight:bold;margin:15px 0 7px}
-input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:7px;font-size:15px;background:white;color:#1f2937}
-textarea{resize:vertical;line-height:1.7}
-.buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
-button{border:0;border-radius:7px;padding:12px 16px;font-size:14px;font-weight:bold;cursor:pointer}
-.primary{background:#991b1b;color:white}
-.secondary{background:#e5e7eb;color:#1f2937}
-.success{background:#166534;color:white}
-#output{min-height:260px;white-space:pre-wrap}
-.note{font-size:12px;color:#64748b;line-height:1.6;margin-top:14px}
-footer{text-align:center;padding:20px;color:#64748b;font-size:12px}
-.hidden{display:none}
-@media(max-width:480px){.card{padding:16px}header h1{font-size:22px}}
-</style>
+  <title>OfficeDraft AI | Official Document Generator</title>
+
+  <meta
+    name="description"
+    content="Create concise official note sheets and letters with OfficeDraft AI."
+  >
+
+  <style>
+    :root {
+      --primary: #991b1b;
+      --primary-dark: #7f1d1d;
+      --green: #166534;
+      --background: #f3f6fb;
+      --border: #d1d5db;
+      --text: #1f2937;
+      --muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
+
+    header {
+      padding: 24px 16px;
+      color: white;
+      background: linear-gradient(135deg, #991b1b, #7f1d1d);
+    }
+
+    .header-inner {
+      max-width: 1050px;
+      margin: auto;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 27px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 5px 9px;
+      border: 1px solid #ffffff70;
+      border-radius: 20px;
+      font-size: 11px;
+    }
+
+    main {
+      max-width: 1050px;
+      margin: 24px auto;
+      padding: 0 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 22px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px #00000008;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .description {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 7px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    input,
+    select,
+    textarea {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: white;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: 2px solid #fecaca;
+      border-color: var(--primary);
+    }
+
+    textarea {
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    button {
+      padding: 12px 15px;
+      border: 0;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:focus-visible {
+      outline: 2px solid #2563eb;
+      outline-offset: 2px;
+    }
+
+    .primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: var(--text);
+    }
+
+    .success {
+      background: var(--green);
+      color: white;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .status {
+      margin-top: 14px;
+      padding: 11px;
+      border-radius: 7px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: 12px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .status.error {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .status.success-message {
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .status.warning {
+      background: #fffbeb;
+      color: #92400e;
+    }
+
+    .analysis {
+      margin-top: 14px;
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    .analysis ul {
+      padding-left: 19px;
+    }
+
+    .analysis li {
+      margin: 5px 0;
+    }
+
+    .document-label {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 5px 9px;
+      background: #fee2e2;
+      color: #991b1b;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .help {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    footer {
+      padding: 24px 14px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 760px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 23px;
+      }
+
+      .card {
+        padding: 17px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+
 <header>
-  <h1>OfficeDraft AI</h1>
-  <p>Official Note Sheet & Letter Generator</p>
+  <div class="header-inner">
+    <h1>OfficeDraft AI</h1>
+    <p>Official Note Sheet & Letter Generator</p>
+    <p>Simple English. Clear references. Professional drafts.</p>
+    <span class="badge">Independent Prototype · Version 2</span>
+  </div>
 </header>
 
 <main>
-<section class="card">
-<h2>Create Official Draft</h2>
+  <div class="grid">
 
-<label for="type">Document Type</label>
-<select id="type" onchange="updateFields()">
-  <option value="note">Note Sheet</option>
-  <option value="letter">Official Letter</option>
-</select>
+    <section class="card">
+      <h2>Create a Draft</h2>
 
-<label for="reference">Page Number / Reference</label>
-<input id="reference" placeholder="Example: 23 24 or Pg. 23/c to 24/c">
-
-<label for="subject">Subject</label>
-<input id="subject" placeholder="Example: Local Purchase Committee (LPC)">
-
-<div id="recipientBox" class="hidden">
-  <label for="recipient">Recipient / Designation</label>
-  <input id="recipient" placeholder="Example: The Senior Postmaster">
-</div>
-
-<label for="context">Brief Context</label>
-<textarea id="context" rows="4"
-placeholder="Briefly explain the matter and the action required."></textarea>
-
-<label for="action">Required Action</label>
-<select id="action">
-  <option value="perusal">Kind perusal and orders</option>
-  <option value="verification">Verification of details</option>
-  <option value="approval">Approval for further action</option>
-  <option value="information">Submission for information</option>
-</select>
-
-<div class="buttons">
-  <button class="primary" onclick="generateDraft()">Generate Draft</button>
-  <button class="secondary" onclick="clearForm()">Clear Form</button>
-</div>
-</section>
-
-<section class="card">
-<h2>Draft Preview</h2>
-<textarea id="output" placeholder="Your draft will appear here. You can edit it before use."></textarea>
-
-<div class="buttons">
-  <button class="success" onclick="copyDraft()">Copy Text</button>
-  <button class="primary" onclick="downloadWord()">Download Word</button>
-</div>
-
-<p class="note">
-This version uses fixed templates and does not require an AI API.
-Check all names, references, facts and official wording before use.
-The download is a Word-compatible .doc file, not a native .docx file.
-</p>
-</section>
-</main>
-
-<footer>OfficeDraft AI • Independent Prototype • English</footer>
-
-<script>
-function updateFields(){
-  const isLetter=document.getElementById("type").value==="letter";
-  document.getElementById("recipientBox").classList.toggle("hidden",!isLetter);
-}
-
-function formatReference(value){
-  const text=value.trim();
-  if(!text) return "";
-
-  // Convert a simple pair such as "23 24" into a page reference.
-  const match=text.match(/^(\d+)\s+(\d+)$/);
-  if(match) return `pages ${match[1]}/c to ${match[2]}/c`;
-
-  return text.replace(/^pg\.?\s*/i,"pages ");
-}
-
-function formatSubject(value){
-  let text=value.trim().replace(/\s+/g," ");
-  if(!text) return "";
-
-  // Keep the recognized abbreviation LPC and its expansion.
-  if(/\blpc\b/i.test(text) && /local purchase committee/i.test(text)){
-    return "Local Purchase Committee (LPC)";
-  }
-
-  if(/^letter from /i.test(text)){
-    return text.replace(/^letter from /i,"Letter from ");
-  }
-
-  return text.charAt(0).toUpperCase()+text.slice(1);
-}
-
-function actionText(value){
-  const actions={
-    perusal:"Submitted for kind perusal and orders, please.",
-    verification:"Verification of the relevant details is requested before further action.",
-    approval:"Submitted for kind perusal and approval for further necessary action, please.",
-    information:"Submitted for kind information, please."
-  };
-  return actions[value]||actions.perusal;
-}
-
-function generateDraft(){
-  const type=document.getElementById("type").value;
-  const reference=formatReference(document.getElementById("reference").value);
-  const subject=formatSubject(document.getElementById("subject").value);
-  const context=document.getElementById("context").value.trim();
-  const action=document.getElementById("action").value;
-  const recipient=document.getElementById("recipient").value.trim();
-
-  if(!subject||!context){
-    alert("Please enter the subject and brief context.");
-    return;
-  }
-
-  if(type==="letter"&&!recipient){
-    alert("Please enter the recipient or designation.");
-    return;
-  }
-
-  let draft="";
-
-  if(type==="note"){
-    draft="NOTE SHEET\n\n";
-    draft+="Subject: "+subject+"\n\n";
-
-    if(reference){
-      draft+="The relevant documents regarding "+subject+
-        " are placed at "+reference+" for kind perusal.\n\n";
-    }
-
-    draft+=context+"\n\n";
-    draft+=actionText(action);
-  }else{
-    draft=recipient+"\n\n";
-    draft+="Subject: "+subject+"\n\n";
-    if(reference) draft+="Reference: "+reference+"\n\n";
-    draft+="Sir/Madam,\n\n";
-    draft+=context+"\n\n";
-    draft+=actionText(action)+"\n\n";
-    draft+="Yours faithfully,\n";
-    draft+="[Name]\n";
-    draft+="[Designation]";
-  }
-
-  document.getElementById("output").value=draft;
-}
-
-async function copyDraft(){
-  const output=document.getElementById("output");
-
-  if(!output.value.trim()){
-    alert("Please generate a draft first.");
-    return;
-  }
-
-  try{
-    await navigator.clipboard.writeText(output.value);
-    alert("Draft copied successfully.");
-  }catch(error){
-    output.focus();
-    output.select();
-    alert("Please copy the selected text manually.");
-  }
-}
-
-function downloadWord(){
-  const text=document.getElementById("output").value;
-
-  if(!text.trim()){
-    alert("Please generate a draft first.");
-    return;
-  }
-
-  const escapeHtml=value=>value.replace(/[&<>"']/g,char=>({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  })[char]);
-
-  const html=`<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Office Draft</title>
-</head>
-<body>
-<pre style="font-family:Arial,sans-serif;font-size:12pt;white-space:pre-wrap;line-height:1.6">${escapeHtml(text)}</pre>
-</body>
-</html>`;
-
-  const blob=new Blob(["\ufeff",html],{
-    type:"application/msword;charset=utf-8"
-  });
-
-  const url=URL.createObjectURL(blob);
-  const link=document.createElement("a");
-  link.href=url;
-  link.download="OfficeDraft.doc";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
-
-function clearForm(){
-  document.getElementById("type").value="note";
-  document.getElementById("reference").value="";
-  document.getElementById("subject").value="";
-  document.getElementById("recipient").value="";
-  document.getElementById("context").value="";
-  document.getElementById("action").value="perusal";
-  document.getElementById("output").value="";
-  updateFields();
-}
-
-updateFields();
-</script>
-</body>
-</html>
+      <p class="description">
