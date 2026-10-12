@@ -1,331 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OfficeDraft AI</title>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Office Draft AI — Note Sheet Generator</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#f1f5f9;color:#202938;font-family:Arial,sans-serif}
-header{background:#941d24;color:#fff;padding:22px 16px}
-header h1{margin:0 0 7px;font-size:24px}
-header p{margin:5px 0;font-size:13px}
-main{max-width:800px;margin:18px auto;padding:0 12px 30px}
-.card{background:#fff;padding:18px;border-radius:12px;margin-bottom:16px;box-shadow:0 2px 10px #0000000b}
-h2{font-size:19px;margin:0 0 15px}
-label{display:block;font-weight:bold;font-size:14px;margin:16px 0 7px}
-input,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font:15px Arial,sans-serif}
-textarea{min-height:100px;resize:vertical;line-height:1.6}
-#context{min-height:190px}
-small{display:block;color:#64748b;font-size:12px;line-height:1.5;margin-top:6px}
-button{width:100%;padding:13px;border:0;border-radius:8px;margin-top:13px;font-size:15px;font-weight:bold}
-.primary{background:#a51f1f;color:white}
-.green{background:#176b43;color:white}
-.secondary{background:#e8eef5;color:#243247}
-#resultSection{display:none}
-#output{white-space:pre-wrap;overflow-wrap:anywhere;padding:16px;border:1px solid #cbd5e1;border-radius:8px;font:16px/1.8 "Times New Roman",serif;min-height:250px}
-footer{text-align:center;color:#64748b;font-size:12px;padding:20px}
-.notice{background:#fff7df;color:#77520c;padding:11px;border-radius:8px;font-size:12px;line-height:1.5;margin-top:12px}
-</style>
-</head>
-<body>
-
-<header>
-<h1>OfficeDraft AI</h1>
-<p>Official Note Sheet Generator</p>
-<p>Three inputs. One professional draft.</p>
-</header>
-
-<main>
-<section class="card">
-<h2>Create Note Sheet</h2>
-
-<form id="form">
-
-<label for="letter">1. Letter Number &amp; Date</label>
-<input id="letter" placeholder="Example: L/PLI/Internal Audit dated 12.11.2025">
-<small>Enter the letter number and date if available.</small>
-
-<label for="source">2. Received From</label>
-<input id="source" placeholder="Example: AD (PLI), CO Mumbai">
-<small>A short office name is sufficient.</small>
-
-<label for="context">3. Context with Page Numbers</label>
-<textarea id="context" placeholder="Example:
-Letter at 35
-Report at 36
-Instructions for all divisions
-Need to forward draft letter
-Draft letter at 38"></textarea>
-<small>Use short phrases. Include page numbers wherever known. Complete sentences are not required.</small>
-
-<button class="primary" type="submit">Generate Draft</button>
-<button class="secondary" type="button" id="clear">Clear Form</button>
-</form>
-</section>
-
-<section class="card" id="resultSection">
-<h2>Generated Draft</h2>
-<div id="output" contenteditable="true" spellcheck="true"></div>
-<button class="primary" type="button" id="copy">Copy Draft</button>
-<button class="green" type="button" id="download">Download Word Document</button>
-<button class="secondary" type="button" id="back">Back to Form</button>
-<div class="notice">
-Review the draft before use. This version uses predefined rules, not an AI service. It must not be treated as having verified facts or documents. Download format is Word-compatible .doc, not native .docx.
-</div>
-</section>
-</main>
-
-<footer>OfficeDraft AI · Independent Prototype</footer>
-
+:root{--navy:#17365d;--blue:#1f5f99;--bg:#f3f6fa;--border:#ccd5e0}*{box-sizing:border-box}
+body{margin:0;font:16px/1.45 Arial,sans-serif;background:var(--bg);color:#202a35}
+header{background:var(--navy);color:white;padding:18px 15px}header h1{font-size:22px;margin:0 0 4px}header p{margin:0;font-size:14px}
+main{max-width:900px;margin:18px auto;padding:0 12px 30px}.card{background:white;border:1px solid var(--border);border-radius:12px;padding:15px;margin-bottom:14px}
+h2{font-size:18px;color:var(--navy);margin:0 0 12px}label{display:block;font-size:14px;font-weight:bold;margin:12px 0 6px}
+input,textarea{width:100%;padding:11px;border:1px solid #b8c4d2;border-radius:7px;font:inherit}textarea{min-height:110px;resize:vertical}
+.hint{font-size:12px;color:#596777;margin-top:5px}.row{display:grid;grid-template-columns:minmax(110px,.8fr) minmax(0,2fr) auto;gap:9px;align-items:end;padding:10px 0;border-bottom:1px solid #e4e9ef}
+.row label{margin-top:0}.row input{min-width:0}button{border:0;border-radius:8px;padding:11px 14px;font-weight:bold;font-size:14px;cursor:pointer}
+.primary{background:var(--blue);color:white}.secondary{background:#e7edf4;color:#18324d}.danger{background:#fff0f0;color:#9a2020}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}.notice{border-left:4px solid #d2a33c;background:#fff9e9;padding:10px 12px;font-size:13px}
+@media(max-width:560px){.row{grid-template-columns:1fr;gap:4px}.row .danger{justify-self:start}.card{padding:13px}}
+</style></head><body>
+<header><h1>Office Draft AI</h1><p>Official Note Sheet Paragraph Generator</p></header><main>
+<section class="card"><h2>1. Letter Details</h2>
+<label for="letter">Letter number and date (if applicable)</label><input id="letter" placeholder="e.g. L/PLI/Internal Audit/2025-26 dated 12.11.2025">
+<label for="sender">Received from (if applicable)</label><input id="sender" placeholder="e.g. AD (PLI), CO Mumbai">
+<div class="hint">Leave blank if there is no incoming letter. The generator will not invent one.</div></section>
+<section class="card"><h2>2. Context / Facts of the Case</h2>
+<label for="context">Rough notes, phrases, or instructions</label><textarea id="context" placeholder="e.g. Permission requested for local purchase; proposal put up for approval."></textarea>
+<div class="hint">Enter case-specific facts here. Keep page numbers in the separate section below. No draft or forwarding letter will be added automatically.</div></section>
+<section class="card"><h2>3. Page Number / Range and Description</h2>
+<div class="hint">Use one row per document/reference: 35, 35-38, or 35, 38. Non-consecutive pages will not be converted into a range.</div>
+<div id="rows"></div><div class="actions"><button id="add" class="secondary" type="button">＋ Add another page reference</button></div></section>
+<section class="card"><h2>4. Generated Note Sheet Paragraph</h2>
+<div class="notice">This version uses local formatting rules, not a live AI service. It arranges the facts and references entered; it cannot reliably infer missing facts. Review before official use.</div>
+<label for="output">Draft output (editable)</label><textarea id="output" style="min-height:260px" placeholder="Generated paragraph appears here. You can edit it manually."></textarea>
+<div class="actions"><button id="generate" class="primary" type="button">Generate Paragraph</button><button id="copy" class="secondary" type="button">Copy Text</button><button id="download" class="secondary" type="button">Download Word-compatible .doc</button><button id="clear" class="secondary" type="button">Clear Form</button></div>
+</section></main>
 <script>
-(function(){
-"use strict";
-const $=id=>document.getElementById(id);
-
-function clean(s){
-return (s||"").replace(/\r/g,"").replace(/[ \t]+/g," ").trim();
-}
-
-function esc(s){
-return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
-}
-
-const abbreviations={
-"PLI":"Postal Life Insurance",
-"RPLI":"Rural Postal Life Insurance",
-"POSB":"Post Office Savings Bank",
-"IPPB":"India Post Payments Bank",
-"SSPO":"Senior Superintendent of Post Offices",
-"SSPOs":"Senior Superintendent of Post Offices",
-"SPO":"Superintendent of Post Offices",
-"DPS":"Director of Postal Services",
-"AD":"Assistant Director",
-"CO":"Circle Office",
-"RO":"Regional Office",
-"HO":"Head Office",
-"HPO":"Head Post Office",
-"SO":"Sub Office",
-"BO":"Branch Office",
-"LPC":"Local Purchase Committee",
-"PA":"Postal Assistant",
-"GDS":"Gramin Dak Sevak",
-"MTS":"Multi-Tasking Staff",
-"APAR":"Annual Performance Appraisal Report",
-"MACP":"Modified Assured Career Progression"
-};
-
-function expandAbbreviations(text){
-let out=text;
-Object.keys(abbreviations).sort((a,b)=>b.length-a.length).forEach(key=>{
-const re=new RegExp("\\b"+esc(key)+"\\b","gi");
-out=out.replace(re,match=>abbreviations[match]||match);
-});
-return out;
-}
-
-function expandSource(value){
-let s=clean(value);
-if(!s)return "";
-
-s=s.replace(/\bAD\s*\(\s*PLI\s*\)\s*,?\s*CO\s+Mumbai\b/i,
-"Assistant Director (Postal Life Insurance), Circle Office, Mumbai");
-
-s=s.replace(/\bSSPO'?s?\s+Akola(?:\s+Division)?\b/i,
-"Office of the Senior Superintendent of Post Offices, Akola Division");
-
-s=s.replace(/\bSSPO'?s?\s+Nagpur City(?:\s+Division)?\b/i,
-"Office of the Senior Superintendent of Post Offices, Nagpur City Division");
-
-return s;
-}
-
-function pageRef(value){
-let s=clean(value);
-s=s.replace(/^(?:page|pages|pg|pgs)\s*/i,"");
-s=s.replace(/\s*\/\s*/g,"/");
-if(!s)return "";
-if(/^\d+$/.test(s))return "Pg-"+s+"/c";
-return "Pg-"+s;
-}
-
-function makePageLine(line){
-let s=clean(line);
-if(!s)return "";
-
-let m=s.match(/^(?:page|pg)\s*(\d+(?:\/c)?)\s*[-–:]\s*(.+)$/i);
-if(!m)m=s.match(/^(\d+(?:\/c)?)\s*[-–:]\s*(.+)$/);
-
-if(m){
-return "Pg-"+m[1]+" – "+improve(m[2]);
-}
-
-m=s.match(/^(letter|report|annexure(?:\s*[-I\d]+)?|application|draft letter|status report)\s+(?:at|on|page|pg)\s*(\d+(?:\/c)?)$/i);
-if(m){
-return "Pg-"+m[2]+" – "+prettyDoc(m[1]);
-}
-
-m=s.match(/^(?:draft letter|draft)\s*(?:placed at|at|page|pg)\s*(\d+(?:\/c)?)$/i);
-if(m){
-return "Pg-"+m[1]+" – Draft letter";
-}
-
-return "";
-}
-
-function prettyDoc(value){
-let s=clean(value).toLowerCase();
-const known={
-"letter":"Letter",
-"report":"Report",
-"annexure":"Annexure",
-"application":"Application",
-"draft letter":"Draft letter",
-"status report":"Status Report"
-};
-return known[s]||s.replace(/\b\w/g,c=>c.toUpperCase());
-}
-
-function improve(value){
-let s=clean(value);
-if(!s)return "";
-
-s=expandAbbreviations(s);
-
-s=s.replace(/\bearly death claim\b/ig,"early death claim");
-s=s.replace(/\bletter received from\b/ig,"a letter has been received from");
-s=s.replace(/\bneed to forward\b/ig,"the matter is required to be forwarded");
-s=s.replace(/\bforward to all divisions\b/ig,"the matter may be forwarded to all concerned divisions");
-s=s.replace(/\bfor approval\b/ig,"for consideration and approval");
-s=s.replace(/\bfor kind perusal and orders\b/ig,"for kind perusal and orders");
-s=s.replace(/\s+/g," ").trim();
-
-if(!s)return "";
-s=s.charAt(0).toUpperCase()+s.slice(1);
-if(!/[.!?]$/.test(s))s+=".";
-return s;
-}
-
-function buildDraft(letter,source,context){
-const paragraphs=[];
-const letterText=clean(letter);
-const sourceText=expandSource(source);
-const raw=clean(context);
-const lines=raw.split("\n").map(clean).filter(Boolean);
-
-const pageLines=[];
-const narrative=[];
-let draftPage="";
-
-lines.forEach(line=>{
-const draftMatch=line.match(/^(?:draft letter|draft)\s*(?:placed at|at|page|pg)\s*(\d+(?:\/c)?)$/i);
-if(draftMatch){
-draftPage=draftMatch[1];
-return;
-}
-
-const formatted=makePageLine(line);
-if(formatted){
-pageLines.push(formatted);
-return;
-}
-
-narrative.push(line);
-});
-
-if(letterText){
-paragraphs.push(
-"Letter No. "+letterText+
-(sourceText?" has been received from "+sourceText+".":" has been received from ______________________________.")
-);
-}else{
-paragraphs.push(
-"A letter dated __________________ bearing No. __________________ has been received"+
-(sourceText?" from "+sourceText+".":" from ______________________________.")
-);
-}
-
-if(narrative.length){
-const text=improve(narrative.join(" "));
-if(text)paragraphs.push(text);
-}else{
-paragraphs.push("[Enter the brief background and purpose of the letter here.]");
-}
-
-if(pageLines.length){
-paragraphs.push("The relevant papers are placed on file as under:\n"+pageLines.map((p,i)=>(i+1)+". "+p).join("\n"));
-}else{
-paragraphs.push("The relevant papers are placed at ______________________________.");
-}
-
-if(draftPage){
-paragraphs.push(
-"The draft letter is placed at Pg-"+draftPage+"/c for kind perusal and orders, please."
-);
-}else{
-paragraphs.push(
-"The draft letter is placed at Pg-____/c for kind perusal and orders, please."
-);
-}
-
-return paragraphs.join("\n\n");
-}
-
-$("form").addEventListener("submit",function(e){
-e.preventDefault();
-const draft=buildDraft(
-$("letter").value,
-$("source").value,
-$("context").value
-);
-$("output").textContent=draft;
-$("resultSection").style.display="block";
-$("resultSection").scrollIntoView({behavior:"smooth",block:"start"});
-});
-
-$("copy").addEventListener("click",async function(){
-const text=$("output").innerText;
-try{
-await navigator.clipboard.writeText(text);
-alert("Draft copied.");
-}catch(e){
-const range=document.createRange();
-range.selectNodeContents($("output"));
-const selection=window.getSelection();
-selection.removeAllRanges();
-selection.addRange(range);
-alert("Text selected. Long-press and choose Copy.");
-}
-});
-
-$("download").addEventListener("click",function(){
-const text=$("output").innerText;
-const html='<html><head><meta charset="utf-8"></head><body style="font-family:Times New Roman;font-size:12pt;line-height:1.6">'+
-text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>")+
-'</body></html>';
-const blob=new Blob(["\ufeff",html],{type:"application/msword"});
-const url=URL.createObjectURL(blob);
-const a=document.createElement("a");
-a.href=url;
-a.download="OfficeDraft.doc";
-document.body.appendChild(a);
-a.click();
-a.remove();
-setTimeout(()=>URL.revokeObjectURL(url),1500);
-});
-
-$("clear").addEventListener("click",function(){
-$("form").reset();
-$("resultSection").style.display="none";
-$("output").textContent="";
-});
-
-$("back").addEventListener("click",function(){
-$("resultSection").style.display="none";
-window.scrollTo({top:0,behavior:"smooth"});
-});
+(()=>{const rows=document.getElementById('rows'),out=document.getElementById('output');
+function addRow(page='',desc=''){const r=document.createElement('div');r.className='row';
+const a=document.createElement('div'),al=document.createElement('label'),pi=document.createElement('input');al.textContent='Page number / range';pi.className='pageno';pi.placeholder='e.g. 35 or 35-38';pi.value=page;a.append(al,pi);
+const b=document.createElement('div'),bl=document.createElement('label'),di=document.createElement('input');bl.textContent='Description';di.className='desc';di.placeholder='e.g. Letter received from AD (PLI)';di.value=desc;b.append(bl,di);
+const rm=document.createElement('button');rm.type='button';rm.className='danger';rm.textContent='Remove';rm.onclick=()=>{r.remove();if(!rows.querySelector('.row'))addRow()};r.append(a,b,rm);rows.append(r)}
+function pageLabel(raw){let s=raw.trim().replace(/\s+/g,'');if(!s)return '';let m=s.match(/^(\d+)(?:-|–|—|to)(\d+)$/i);if(m)return `Pg-${m[1]}/c to Pg-${m[2]}/c`;if(/^\d+(?:,\d+)+$/.test(s))return s.split(',').map(n=>`Pg-${n}/c`).join(' and ');if(/^\d+$/.test(s))return `Pg-${s}/c`;return raw.trim()}
+function sentence(s){s=s.trim().replace(/\s+/g,' ').replace(/[;,.\s]+$/,'');return s?s+'.':''}
+function build(){const letter=document.getElementById('letter').value.trim(),sender=document.getElementById('sender').value.trim(),context=document.getElementById('context').value.trim(),parts=[];
+if(letter||sender){if(letter&&sender)parts.push(`Letter No. ${letter} has been received from ${sender}.`);else if(letter)parts.push(`Letter No. ${letter} has been received.`);else parts.push(`Correspondence has been received from ${sender}.`)}
+if(context){const c=context.split(/\n+/).map(sentence).filter(Boolean);if(c.length)parts.push(c.join(' '))}
+const refs=[...rows.querySelectorAll('.row')].map(r=>({p:r.querySelector('.pageno').value.trim(),d:r.querySelector('.desc').value.trim()})).filter(x=>x.p||x.d);
+if(refs.length){const s=refs.map(x=>{const p=pageLabel(x.p),d=x.d.replace(/\s+/g,' ').replace(/[.;,\s]+$/,'');if(p&&d)return `${d} is placed at ${p}.`;if(p)return `${p}.`;return sentence(d)}).filter(Boolean);parts.push(s.join(' '))}
+return parts.join('\n\n')}
+document.getElementById('add').onclick=()=>addRow();
+document.getElementById('generate').onclick=()=>{out.value=build()||'Please enter case context or at least one page reference.'};
+document.getElementById('copy').onclick=async()=>{if(!out.value.trim()){alert('Generate or enter text first.');return}try{await navigator.clipboard.writeText(out.value);alert('Draft text copied.')}catch(e){out.focus();out.select();alert(document.execCommand('copy')?'Draft text copied.':'Select the text and copy it manually.')}};
+document.getElementById('download').onclick=()=>{if(!out.value.trim()){alert('Generate or enter text first.');return}const esc=out.value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');const doc='<!doctype html><html><head><meta charset="utf-8"></head><body style="font-family:Times New Roman;font-size:12pt;line-height:1.5">'+esc+'</body></html>';const blob=new Blob(['\ufeff',doc],{type:'application/msword'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='note-sheet-draft.doc';document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url)};
+document.getElementById('clear').onclick=()=>{document.getElementById('letter').value='';document.getElementById('sender').value='';document.getElementById('context').value='';out.value='';rows.innerHTML='';addRow()};
+addRow();
 })();
-</script>
-
-</body>
-</html>
+</script></body></html>
