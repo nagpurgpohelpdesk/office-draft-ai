@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OfficeDraft AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f6fb;
+      color: #1f2937;
+    }
+
+    header {
+      background: #991b1b;
+      color: white;
+      padding: 22px 16px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 24px auto;
+      padding: 0 14px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 12px #0000000a;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      font-size: 14px;
+      margin: 15px 0 7px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 15px;
+      background: white;
+      color: #1f2937;
+    }
+
+    textarea {
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 7px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: #991b1b;
+      color: white;
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+
+    .success {
+      background: #166534;
+      color: white;
+    }
+
+    #output {
+      min-height: 230px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.6;
+      margin-top: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>OfficeDraft AI</h1>
+    <p>Official Note Sheet & Letter Generator</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Create Official Draft</h2>
+
+      <label for="type">Document Type</label>
+      <select id="type" onchange="updateFields()">
+        <option value="note">Note Sheet</option>
+        <option value="letter">Official Letter</option>
+      </select>
+
+      <label for="reference">Page Number / Reference</label>
+      <input
+        id="reference"
+        placeholder="Example: Pg. 19/c to 20/c"
+      >
+
+      <label for="subject">Subject</label>
+      <input
+        id="subject"
+        placeholder="Example: Verification of Double Payment"
+      >
+
+      <div id="recipientBox" hidden>
+        <label for="recipient">Recipient / Designation</label>
+        <input
+          id="recipient"
+          placeholder="Example: The Senior Postmaster"
+        >
+      </div>
+
+      <label for="context">Brief Context</label>
+      <textarea
+        id="context"
+        rows="4"
+        placeholder="Briefly explain the matter and required action."
+      ></textarea>
+
+      <label for="action">Required Action</label>
+      <select id="action">
+        <option value="perusal">Kind perusal and orders</option>
+        <option value="verification">Verification of details</option>
+        <option value="approval">Approval for further action</option>
+        <option value="information">Submission for information</option>
+      </select>
+
+      <div class="buttons">
+        <button class="primary" onclick="generateDraft()">
+          Generate Draft
+        </button>
+
+        <button class="secondary" onclick="clearForm()">
+          Clear Form
+        </button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Draft Preview</h2>
+
+      <textarea
+        id="output"
+        placeholder="Your draft will appear here. You can edit it before use."
+      ></textarea>
+
+      <div class="buttons">
+        <button class="success" onclick="copyDraft()">
+          Copy Text
+        </button>
+
+        <button class="primary" onclick="downloadWord()">
+          Download Word
+        </button>
+      </div>
+
+      <p class="note">
+        This version uses fixed templates and does not require an AI API.
+        Review every draft before official use. Word export is a basic
+        HTML-based document and will be improved in a later version.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    OfficeDraft AI • Independent Prototype • English
+  </footer>
+
+  <script>
+    function updateFields() {
+      const isLetter = document.getElementById("type").value === "letter";
+      document.getElementById("recipientBox").hidden = !isLetter;
+    }
+
+    function generateDraft() {
+      const type = document.getElementById("type").value;
+      const reference = document.getElementById("reference").value.trim();
+      const subject = document.getElementById("subject").value.trim();
+      const context = document.getElementById("context").value.trim();
+      const action = document.getElementById("action").value;
+      const recipient = document.getElementById("recipient").value.trim();
+
+      if (!subject || !context) {
+        alert("Please enter the subject and brief context.");
+        return;
+      }
+
+      const actionText = {
+        perusal: "Submitted for kind perusal and orders, please.",
+        verification: "Verification of the relevant details is requested before further action.",
+        approval: "Submitted for kind perusal and approval for further necessary action, please.",
+        information: "Submitted for kind information, please."
+      };
+
+      let draft = "";
+
+      if (type === "note") {
+        draft = "NOTE SHEET\n\n";
+        draft += "Subject: " + subject + "\n\n";
+
+        if (reference) {
+          draft += "The relevant documents are placed at " +
+            reference + " for kind perusal.\n\n";
+        }
+
+        draft += context + "\n\n";
+        draft += actionText[action];
+      } else {
+        if (!recipient) {
+          alert("Please enter the recipient or designation.");
+          return;
+        }
+
+        draft = recipient + "\n\n";
+        draft += "Subject: " + subject + "\n\n";
+        draft += "Sir/Madam,\n\n";
+        draft += context + "\n\n";
+        draft += actionText[action] + "\n\n";
+        draft += "Yours faithfully,\n";
+        draft += "[Name]\n";
+        draft += "[Designation]";
+      }
+
+      document.getElementById("output").value = draft;
+    }
+
+    async function copyDraft() {
+      const output = document.getElementById("output");
+
+      if (!output.value.trim()) {
+        alert("Please generate a draft first.");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(output.value);
+        alert("Draft copied successfully.");
+      } catch (error) {
+        output.focus();
+        output.select();
+        alert("Please copy the selected text manually.");
+      }
+    }
+
+    function downloadWord() {
+      const output = document.getElementById("output").value;
+
+      if (!output.trim()) {
+        alert("Please generate a draft first.");
+        return;
+      }
+
+      const escapeHtml = (text) =>
+        text.replace(/[&<>"']/g, (character) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        })[character]);
+
+      const content = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Official Draft</title>
+        </head>
+        <body>
+          <pre style="font-family:Arial,sans-serif;font-size:12pt;white-space:pre-wrap;line-height:1.6;">${escapeHtml(output)}</pre>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob(
+        ["\ufeff", content],
+        { type: "application/msword;charset=utf-8" }
+      );
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "OfficeDraft.doc";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function clearForm() {
+      document.getElementById("type").value = "note";
+      document.getElementById("reference").value = "";
+      document.getElementById("subject").value = "";
+      document.getElementById("context").value = "";
+      document.getElementById("recipient").value = "";
+      document.getElementById("action").value = "perusal";
+      document.getElementById("output").value = "";
+      updateFields();
+    }
+  </script>
+</body>
+  </html>
